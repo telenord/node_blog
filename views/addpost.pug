@@ -1,0 +1,28 @@
+extends layout
+
+block content
+  h1= title
+  //if errors
+  //  each error, i in errors
+  //    div.alert.alert-danger #{error.msg, i}
+  form(method='post', action='/add/', enctype='multipart/form-data')
+    .form-group
+      label Name
+      input.form-control(name='title', type='text', placeholder='Enter title')
+    .form-group
+      label Username
+      input.form-control(name='username', type='text', placeholder='Enter username')
+    .form-group
+      label Email
+      input.form-control(name='email', type='email', placeholder='Enter email')
+    .form-group
+      label Password
+      text-group.form-control(name='body', placeholder='Text')
+    .form-group
+      label Select
+      input.form-control(name='author', type='password', placeholder='Confirm Password')
+    .form-group
+      label Profile image
+      input.form-control(name='profileimage', type='file')
+    button.btn.btn-primary(type='submit') Register
+
