@@ -19,7 +19,7 @@ router.get('/', (req, res, next)=> {
   const collection = db.get('posts');
   collection.find()
     .then(posts =>{
-      res.render('index', { title: 'Express', posts });
+      res.render('index', { posts });
     })
     .catch(err=>{
       console.log('error find',err);

@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const {check, validationResult} = require('express-validator/check');
+const {matchedData, sanitize} = require('express-validator/filter');
 const multer = require('multer');
 const imageFilter = require('../utils/utils');
 const mongo = require('mongodb');
@@ -9,26 +10,34 @@ const url = 'localhost:27017/nodeblog';
 const db = monk(url);
 
 
-const upload = multer({dest: 'uploads/', fileFilter: imageFilter});
+const upload = multer({dest: './public/images/uploads/', fileFilter: imageFilter});
 
-/* GET posts listing. */
 router.get('/add', function (req, res, next) {
-  //const categories = db.get('categories');
   db.get('categories').find()
-    .then(categories =>{
-      console.log(categories);
-      res.render('addpost', {title: 'Add post', categories });
+    .then(categories => {
+      res.render('addpost', {title: 'Add post', categories});
     })
-    .catch(err=>{
+    .catch(err => {
       console.log(err);
       res.send(err);
     })
+});
 
+router.get('/show/:id', function (req, res, next) {
+  const _id = req.params.id;
+  db.get('posts').findOne({_id})
+    .then(post => {
+      console.log(post);
+      res.render('post', {post});
+    })
+    .catch(err => {
+      console.log(err);
+      res.send(err);
+    })
 });
 
 router.post('/add', [
   upload.single('mainimage'),
-
   check('title', 'Title fileld is required')
     .trim()
     .exists(),
@@ -38,42 +47,73 @@ router.post('/add', [
   check('author', 'Author fileld is required')
     .trim()
     .exists(),
-
 ], function (req, res, next) {
-
   const {file, body: {title, body, category, author}} = req;
-
   const date = new Date();
-
-  const mainImage = file ? file.originalname : 'noimage.jpg';
-
+  const mainImage = file ? file.filename : 'noimage.jpg';
   let errors = validationResult(req);
-
   if (!errors.isEmpty()) {
     res.render('addpost', {errors: errors.mapped()});
   } else {
-
     const posts = db.get('posts');
+    posts.insert({title, body, category, author, date, mainimage: mainImage})
+      .then((post) => {
 
-    posts.insert({title, body, category, author, date, mainImage})
-      .then((post)=>{
-        console.log(post);
         req.flash('success', 'Post added');
         res.location('/');
         res.redirect('/');
-        })
-      .catch(err=>{
+      })
+      .catch(err => {
         console.log(err);
         res.send(err);
       })
-    // , (err, post) => {
-    //   if (err) {
-    //
-    //
-    //   } else {
-    //
-    //   }
-    // })
+  }
+});
+
+router.post('/addcomment', [
+  check('email', 'Email fileld is required')
+    .exists()
+    .isEmail()
+    .withMessage('Must be an email')
+    .normalizeEmail(),
+  check('name','Name fileld is required' )
+    .trim()
+    .exists()
+    .withMessage('Name32 fileld is requireds'),
+  check('body', 'Body fileld is required')
+    .trim()
+    .exists(),
+], function (req, res, next) {
+  const {name, body, email, postid} = req.body;
+
+  const commentdate = new Date();
+
+  const posts = db.get('posts');
+  let errors = validationResult(req);
+
+  if (!errors.isEmpty()) {
+    posts.findOne({_id: postid})
+      .then(post => {
+        res.render('post', {errors: errors.mapped(), post});
+      })
+      .catch(err => {
+        console.log(err);
+        res.send(err);
+      })
+
+  } else {
+    const comment = {name, body, commentdate};
+    posts.update({_id: postid}, {$push: {comments: comment}})
+      .then((post) => {
+        console.log(post);
+        req.flash('success', 'Comment added');
+        res.location(`/posts/show/${postid}`);
+        res.redirect(`/posts/show/${postid}`);
+      })
+      .catch(err => {
+        console.log(err);
+        res.send(err);
+      })
   }
 });
 

@@ -18,7 +18,9 @@ const categoriesRouter = require('./routes/categories');
 
 const app = express();
 app.locals.moment = require('moment');
-
+app.locals.truncatedText = (text, length)=>{
+  return text.substring(0,length);
+};
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');

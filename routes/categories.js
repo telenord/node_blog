@@ -7,10 +7,23 @@ const url = 'localhost:27017/nodeblog';
 const db = monk(url);
 
 
-/* GET posts listing. */
 router.get('/add', function (req, res, next) {
   res.render('addcategory', {title: 'Add category'});
 });
+
+router.get('/show/:category', function (req, res, next) {
+  const category  = req.params.category;
+  db.get('posts').find({category: category})
+    .then(posts => {
+      console.log(posts);
+      res.render('index', {title: category, posts});
+    })
+    .catch(err => {
+      console.log(err);
+      res.send(err);
+    })
+});
+
 
 router.post('/add', [
   check('name', 'CategoryName fileld is required')
