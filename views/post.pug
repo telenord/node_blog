@@ -1,39 +1,42 @@
 extends layout
 
 block content
-  .post
-    h1 #{post.title}
+  .card.col-xs-12
+    h1.card-header #{post.title}
     p.meta Posted in
       |
       a(href='/categories/show/' + post.category) #{post.category}
       |  by #{post.author} on #{moment(post.date).format("DD-MM-YYYY")}
-    img(src='/images/uploads/' + post.mainimage)
-    !=post.body
+    img.card-img-top(src='/images/uploads/' + post.mainimage)
+    .card-body
+      p.card-text
+      !=post.body
     br
     hr
-    if post.comments
-      h3 Comments
-      each comment, i in post.comments
-        .comment
-          p.comment-name #{comment.name}
-          p.comment-body #{comment.body}
-    h3 Add comment
-    if errors
-      ul.errors
-        each error, i in errors
-          li.alert.alert-danger #{error.msg}
-    form.comment-form(method='post', action='/posts/addcomment')
-      input(name='postid', type='hidden', value=post._id)
-      .form-group
-        label Name
-        input.form-control(name='name', type='text', placeholder='Enter name')
-      .form-group
-        label Email
-        input.form-control(name='email', type='text', placeholder='Enter email')
-      .form-group
-        label Comment
-        textarea.form-control(name='body', placeholder='Enter Comment')
-      button.btn.btn-primary(type='submit') Add comment
+    .card-body
+      if post.comments
+        h3 Comments
+        each comment, i in post.comments
+          .comment
+            p.comment-name #{comment.name}
+            p.comment-body #{comment.body}
+      h3 Add comment
+      if errors
+        ul.errors
+          each error, i in errors
+            li.alert.alert-danger #{error.msg}
+      form.comment-form(method='post', action='/posts/addcomment')
+        input(name='postid', type='hidden', value=post._id)
+        .form-group
+          label Name
+          input.form-control(name='name', type='text', placeholder='Enter name')
+        .form-group
+          label Email
+          input.form-control(name='email', type='text', placeholder='Enter email')
+        .form-group
+          label Comment
+          textarea.form-control(name='body', placeholder='Enter Comment')
+        button.btn.btn-primary(type='submit') Add comment
 
 
 
