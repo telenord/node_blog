@@ -2,27 +2,31 @@ extends layout
 
 block content
   h1= title
-  //if errors
-  //  each error, i in errors
-  //    div.alert.alert-danger #{error.msg, i}
-  form(method='post', action='/add/', enctype='multipart/form-data')
+  if errors
+    each error, i in errors
+      div.alert.alert-danger #{error.msg, i}
+  form(method='post', action='/posts/add/', enctype='multipart/form-data')
     .form-group
-      label Name
+      label Title
       input.form-control(name='title', type='text', placeholder='Enter title')
     .form-group
-      label Username
-      input.form-control(name='username', type='text', placeholder='Enter username')
+      label Category
+      select(name='category').form-control
+        each category, i in categories
+          option(value=category.name) #{category.name}
     .form-group
-      label Email
-      input.form-control(name='email', type='email', placeholder='Enter email')
+      label Body
+      textarea.form-control(name='body', placeholder='Text')
     .form-group
-      label Password
-      text-group.form-control(name='body', placeholder='Text')
+      label Author
+      select(name='author').form-control
+        option(value='John') John
+        option(value='Pete') Pete
     .form-group
-      label Select
-      input.form-control(name='author', type='password', placeholder='Confirm Password')
-    .form-group
-      label Profile image
-      input.form-control(name='profileimage', type='file')
-    button.btn.btn-primary(type='submit') Register
+      label Post image
+      input.form-control(name='mainimage', type='file')
+    button.btn.btn-primary(type='submit') Save
+    script(src='/ckeditor/ckeditor.js')
+    script
+      | CKEDITOR.replace('body')
 

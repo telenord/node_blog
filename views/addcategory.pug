@@ -1,0 +1,16 @@
+extends layout
+
+block content
+  h1= title
+  if errors
+    each error, i in errors
+      div.alert.alert-danger #{error.msg, i}
+  form(method='post', action='/categories/add/')
+    .form-group
+      label Name
+      input.form-control(name='name', type='text', placeholder='Enter name')
+    button.btn.btn-primary(type='submit') Save
+    script(src='/ckeditor/ckeditor.js')
+    script
+      | CKEDITOR.replace('body')
+

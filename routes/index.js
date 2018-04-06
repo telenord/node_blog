@@ -16,16 +16,14 @@ db.then(() => {
 
 /* GET home page. */
 router.get('/', (req, res, next)=> {
-  const collection = db.get('nodeblog');
+  const collection = db.get('posts');
   collection.find()
     .then(posts =>{
-      console.log(posts);
       res.render('index', { title: 'Express', posts });
     })
     .catch(err=>{
       console.log('error find',err);
     })
-
 });
 
 module.exports = router;
